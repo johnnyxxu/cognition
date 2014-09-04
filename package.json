@@ -1,0 +1,11 @@
+{
+  "name": "cognition",
+  "description": "write that down",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "4.x",
+    "serve-index": "1.x",
+    "bcrypt": "0.x"
+  }
+}

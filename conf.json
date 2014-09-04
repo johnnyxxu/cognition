@@ -1,0 +1,10 @@
+{
+  "http_port": 8000,
+  "https_port": 9000,
+  "cog_root": "/srv/cognition",
+  "ssl_key": "$cog_root/ssl/test.key.pem",
+  "ssl_cert": "$cog_root/ssl/cert.pem",
+  "basic_auths": [
+    "$2a$08$eDv11C3I7e9Pk2HJpbP5O.x7hlxxvs8pSKThH4BfBJLlJT2mA3Cgq"
+  ]
+}
