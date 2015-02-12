@@ -1,0 +1,16 @@
+body {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  text-align: left;
+  max-width: 400px;
+  padding-left: 15px;
+}
+p, pre {
+  padding-left: 20px;
+}
+.call {
+  font-weight: 700;
+}
+.desc {
+  padding-left: 25px;
+}

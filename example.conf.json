@@ -1,0 +1,26 @@
+{
+  "ports": {
+    "http": 8080,
+    "https": 8443
+  },
+  "paths": {
+    "sslKey": "ssl/dev.key.pem",
+    "sslCert": "ssl/cert.pem"
+  },
+  "auths": [
+    "$2a$08$eDv11C3I7e9Pk2HJpbP5O.x7hlxxvs8pSKThH4BfBJLlJT2mA3Cgq"
+  ],
+  "authRealm": "Secret Stuff",
+  "db": "mongodb://localhost/test",
+  "serveIndex": [
+    {
+      "route": "/public",
+      "path": "web/public",
+      "secure": false,
+      "options": {
+        "icons": true,
+        "view": "details"
+      }
+    }
+  ]
+}

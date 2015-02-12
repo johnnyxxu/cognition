@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="resources/styles.css"/>
+  <title>Cognition</title>
+</head>
+<body>
+  <h2>Documents API</h2>
+
+  <p>This is a basic "hello world"-style RESTful API that can be used to store
+  documents. Each doc has a <code>name</code> and <code>content</code>.</p>
+
+  <p>The route can be found at <a href="/docs">/docs</a>.
+  Note that it requires authorization and is secured with TLS.</p>
+
+  <p class="call">GET /docs</p>
+  <div class="desc">
+    <p>Returns all documents.</p>
+  </div>
+
+  <p class="call">GET /docs/:name</p>
+  <div class="desc">
+    <p>Fetch a document by <code>:name</code>.</p>
+  </div>
+
+  <p class="call">POST /docs</p>
+  <div class="desc">
+    <p>Create a new document. Provide a json request like:</p>
+    <pre><code>
+    {
+      "name": "notes",
+      "content": "today was a good day"
+    }
+    </code></pre>
+    <p><code>name</code> is required, must be unique, and can only contain
+    letters, numbers, dashes, and underscores.</p>
+  </div>
+
+  <p class="call">PUT /docs/:name</p>
+  <div class="desc">
+    <p>Update a document by <code>:name</code>, providing a json request like
+    the one shown above.</p>
+  </div>
+
+  <p class="call">DELETE /docs/:name</p>
+  <div class="desc">
+    <p>Delete a document by <code>:name</code>.</p>
+  </div>
+
+</body>
+</html>

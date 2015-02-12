@@ -1,11 +1,28 @@
 {
   "name": "cognition",
-  "description": "write that down",
+  "description": "A simple web service for storing and fetching information",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
     "express": "4.x",
+    "mkdirp": "0.x",
     "serve-index": "1.x",
-    "bcrypt": "0.x"
+    "serve-favicon": "2.x",
+    "bcrypt": "0.x",
+    "mongoose": "3.x",
+    "mongoose-unique-validator": "0.x",
+    "body-parser": "1.x",
+    "object-path": "0.x"
+  },
+  "devDependencies": {
+    "supertest": "0.x",
+    "mocha": "1.x",
+    "should": "4.x",
+    "mockgoose": "1.x",
+    "async": "0.x"
+  },
+  "scripts": {
+    "test": "mocha --bail test/",
+    "start": "node server.js"
   }
 }

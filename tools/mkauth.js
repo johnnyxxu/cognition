@@ -8,12 +8,14 @@ var bcrypt = require('bcrypt'),
     creds = process.argv[2];
 
 if (!creds || creds.indexOf(':') == -1) {
-  console.log('Usage: node mkauth.js username:password');
+  console.error('Usage: node mkauth.js username:password');
   process.exit(1);
 }
 
 var encoded = new Buffer(creds).toString('base64');
-console.log(encoded);
 bcrypt.hash(encoded, saltsize, function(err, hash){
-  console.log(hash);
+  if (err)
+    console.error('Error: ' + err);
+  else
+    console.log(hash);
 });

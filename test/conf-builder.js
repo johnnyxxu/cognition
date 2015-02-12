@@ -1,0 +1,106 @@
+// Unit tests for conf-builder.js tool
+// Note that this doesn't cover every setting in the conf, just some of the
+// non-trivial ones. It may not be complete but it's better than no tests.
+
+var should = require('should'),
+    builder = require('../tools/conf-builder'),
+    path = require('path'),
+    root = path.join(__dirname, '..');
+
+describe('conf-builder', function() {
+
+  describe('ports', function() {
+    it('should set defaults', function(done) {
+      var defaults = { ports: { http:8080, https:8443 } };
+      builder.build({}).should.have.properties(defaults);
+      done();
+    });
+    it('should work with valid ports', function(done) {
+      var conf = { ports: { http: 1234, https: 0 } },
+          result = builder.build(conf);
+      result.should.have.properties(conf);
+      done();
+    });
+    it('should bitch about missing nested properties', function(done) {
+      var bad = { ports: "I'm bad, I'm nationwide" };
+      builder.build.bind(null, bad).should.throw();
+      done();
+    });
+  });
+
+  describe('paths', function() {
+    it('should set defaults', function(done) {
+      var defaults = {
+        paths: {
+          sslKey: path.join(root, 'ssl', 'dev.key.pem'),
+          sslCert: path.join(root, 'ssl', 'cert.pem'),
+        }
+      };
+      builder.build({}).should.have.properties(defaults);
+      done();
+    });
+    it('should leave abosulte paths', function(done) {
+      var conf = { paths: { sslKey:'/somewhere/key', sslCert:'/tmp/cert'} },
+          result = builder.build(conf);
+      result.should.have.properties(conf);
+      done();
+    });
+    it('should resolve relative paths', function(done) {
+      var conf = { paths: { sslKey:'key', sslCert:'cert'} },
+          result = builder.build(conf),
+          expected = {
+            paths: {
+              sslKey: path.resolve(root, 'key'),
+              sslCert: path.resolve(root, 'cert')
+            }
+          };
+      result.should.have.properties(expected);
+      done();
+    });
+    it('should bitch about missing nested properties', function(done) {
+      var bad = { paths: "I'm bad, I'm nationwide" };
+      builder.build.bind(null, bad).should.throw();
+      done();
+    });
+  });
+
+  describe('auths', function() {
+    it('should set defaults', function(done) {
+      var result = builder.build({});
+      result.should.have.property('auths');
+      result.auths.should.be.a.Array;
+      result.auths.should.have.length(1);
+      result.auths[0].should.be.a.String;
+      done();
+    });
+    it("should bitch if an array isn't given", function(done) {
+      var bad = { auths: "I'm bad, I'm nationwide" };
+      builder.build.bind(null, bad).should.throw();
+      done();
+    });
+  });
+
+  describe('serveIndex', function() {
+    it('should set defaults', function(done) {
+      var result = builder.build({});
+      result.should.have.property('serveIndex');
+      result.serveIndex.should.be.a.Array;
+      result.serveIndex.should.have.length(1);
+      result.serveIndex[0].should.eql({
+        route: '/public',
+        path: 'web/public',
+        secure: false,
+        options: { icons: true, view: 'details' }
+      });
+      done();
+    });
+    it("should bitch if paths are wrong", function(done) {
+      var bad = { serveIndex: "I'm bad, I'm nationwide" };
+      builder.build.bind(null, bad).should.throw();
+      bad = { serveIndex: [ {options: true} ] };
+      builder.build.bind(null, bad).should.throw();
+      done();
+    });
+  });
+
+});
