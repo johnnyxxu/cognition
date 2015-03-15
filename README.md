@@ -33,7 +33,7 @@ Copy `example.conf.json` to `conf.json` and edit it.
 See the **Configuration** section below for more info.
 
 To use HTTPS, you'll need a key and certificate. If you don't already have
-those, I have some instructions [here][ssl/tls].
+those, I have some instructions in [this][ssl/tls] doc.
 
 To use basic authentication, you'll need to hash a username and password.
 There's a `tools/mkauth.js` script included in this project for that purpose:
@@ -117,6 +117,6 @@ TODO
 [node]:             http://nodejs.org/
 [mongo]:            http://www.mongodb.org/
 [iptables-wiki]:    https://wiki.archlinux.org/index.php/iptables
-[iptables-guide]:   https://github.com/tylerbrazier/archlinux/blob/master/docs/server.md#ip-tables
+[iptables-guide]:   https://github.com/tylerbrazier/linux/blob/master/docs/iptables.md
 [serve-index opts]: https://www.npmjs.com/package/serve-index#options
-[ssl/tls]:          https://github.com/tylerbrazier/archlinux/blob/master/docs/server.md#certs
+[ssl/tls]:          https://github.com/tylerbrazier/linux/blob/master/docs/server.md
