@@ -16,7 +16,7 @@ I've only run this myself on Arch linux but the steps should be similar for
 other distros. Install [node][node] and [mongodb][mongo].
 You'll also need `gcc`, `make`, and `python2` for node-gyp. On Arch (as root):
 
-    pacman -Sy --needed nodejs mongodb gcc make python2
+    pacman -Sy --needed nodejs npm mongodb gcc make python2
     systemctl start mongodb
     systemctl enable mongodb
 
@@ -32,8 +32,10 @@ The **Testing** section below describes how to configure and run the unit tests.
 Copy `example.conf.json` to `conf.json` and edit it.
 See the **Configuration** section below for more info.
 
-To use HTTPS, you'll need a key and certificate. If you don't already have
-those, I have some instructions in [this][ssl/tls] doc.
+To use HTTPS, you'll need a key and certificate. This project includes a
+`dev.key.pem` and `dev.cert.pem` for development. Never use these in production
+since the key is public on github! I have some separate instructions on how to
+generate your own key and cert in [this][ssl/tls] doc.
 
 To use basic authentication, you'll need to hash a username and password.
 There's a `tools/mkauth.js` script included in this project for that purpose:
@@ -60,6 +62,8 @@ Alternatively, you can start the server with `npm`:
 
     npm start
 
+Browse to `http://localhost:8080`.
+
 Configuration
 -------------
 The server reads these properties from `conf.json`:
@@ -68,8 +72,8 @@ The server reads these properties from `conf.json`:
   - `http`: the http port to listen on; defaults to `8080`
   - `https`: the https port to listen on; defaults to `8443`
 - `paths` (non-absolute paths will be relative to the project root)
-  - `sslKey`: path to the ssl key used for https; defaults to `ssl/dev.key.pem`
-  - `sslCert`: path to the ssl cert used for https; defaults to `ssl/cert.pem`
+  - `tlsKey`: path to the key used for https; defaults to `tls/dev.key.pem`
+  - `tlsCert`: path to the cert used for https; defaults to `tls/dev.cert.pem`
 - `auths`: array of hashed user:password entries allowed for basic auth;
   defaults to an array with a single hash for `test:test`
 - `authRealm`: the Basic realm used for https; defaults to `Secret Stuff`
@@ -78,7 +82,7 @@ The server reads these properties from `conf.json`:
   is an object with these properties:
   - `route`: the route
   - `path`: the local path to the directory to serve files from
-  - `secure`: boolean - if true, route will be secured with ssl and basic auth
+  - `secure`: boolean - if true, route will be secured with tls and basic auth
   - `options`: options object passed to [serve-index][serve-index opts]
 
 By default, the `serveIndex` array contains a single entry:
@@ -103,8 +107,6 @@ Before running unit tests, edit `test/conf.json` to configure the tests:
   [mockgoose][mockgoose] instead of a real db.
 - `preDrop`: if set, the database will be dropped upon connecting.
 - `postDrop`: if set, the database will be dropped before disconnecting.
-
-For whatever reason, mockgoose currently doesn't work but using a real db does.
 
 Run `npm test` to run all unit tests.
 

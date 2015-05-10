@@ -19,8 +19,8 @@ try {
 }
 
 var httpsOptions = {
-  key: fs.readFileSync(conf.paths.sslKey),
-  cert: fs.readFileSync(conf.paths.sslCert)
+  key: fs.readFileSync(conf.paths.tlsKey),
+  cert: fs.readFileSync(conf.paths.tlsCert)
 };
 
 var app = require('./app')(conf);

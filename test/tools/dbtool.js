@@ -9,10 +9,23 @@ var confAt = require('path').join(__dirname, '..', 'conf.json'),
 
 conf.db = conf.db || 'mongodb://localhost/test';
 
-function drop() { mongoose.connection.db.dropDatabase(); }
-
 if (conf.useMockgoose)
   require('mockgoose')(mongoose);
+
+function drop() {
+  mongoose.connection.db.dropDatabase();
+}
+
+function verifyEmpty(done) {
+  mongoose.connection.db.listCollections().toArray(function(err, colls) {
+    if (err)
+      return done(err);
+    else if (colls.length != 0)
+      return done(new Error(conf.db + ' is not empty.'));
+    else
+      done();
+  });
+}
 
 module.exports = {
   open: function(done) {
@@ -21,13 +34,10 @@ module.exports = {
         return done(err);
       if (conf.preDrop)
         drop();
-      mongoose.connection.db.collectionNames(function(err, names) {
-        if (err)
-          return done(err);
-        if (names.length != 0)
-          return done(new Error(conf.db + ' is not empty.'));
+      if (!conf.useMockgoose)
+        verifyEmpty(done);
+      else
         done();
-      });
     });
   },
 
@@ -37,5 +47,8 @@ module.exports = {
     mongoose.connection.close(done);
   },
 
-  drop: function(done) { drop(); done(); }
+  drop: function(done) {
+    drop();
+    done();
+  }
 }

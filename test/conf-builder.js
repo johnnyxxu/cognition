@@ -32,26 +32,26 @@ describe('conf-builder', function() {
     it('should set defaults', function(done) {
       var defaults = {
         paths: {
-          sslKey: path.join(root, 'ssl', 'dev.key.pem'),
-          sslCert: path.join(root, 'ssl', 'cert.pem'),
+          tlsKey: path.join(root, 'tls', 'dev.key.pem'),
+          tlsCert: path.join(root, 'tls', 'dev.cert.pem'),
         }
       };
       builder.build({}).should.have.properties(defaults);
       done();
     });
     it('should leave abosulte paths', function(done) {
-      var conf = { paths: { sslKey:'/somewhere/key', sslCert:'/tmp/cert'} },
+      var conf = { paths: { tlsKey:'/somewhere/key', tlsCert:'/tmp/cert'} },
           result = builder.build(conf);
       result.should.have.properties(conf);
       done();
     });
     it('should resolve relative paths', function(done) {
-      var conf = { paths: { sslKey:'key', sslCert:'cert'} },
+      var conf = { paths: { tlsKey:'key', tlsCert:'cert'} },
           result = builder.build(conf),
           expected = {
             paths: {
-              sslKey: path.resolve(root, 'key'),
-              sslCert: path.resolve(root, 'cert')
+              tlsKey: path.resolve(root, 'key'),
+              tlsCert: path.resolve(root, 'cert')
             }
           };
       result.should.have.properties(expected);

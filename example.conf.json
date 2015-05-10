@@ -4,8 +4,8 @@
     "https": 8443
   },
   "paths": {
-    "sslKey": "ssl/dev.key.pem",
-    "sslCert": "ssl/cert.pem"
+    "tlsKey": "tls/dev.key.pem",
+    "tlsCert": "tls/dev.cert.pem"
   },
   "auths": [
     "$2a$08$eDv11C3I7e9Pk2HJpbP5O.x7hlxxvs8pSKThH4BfBJLlJT2mA3Cgq"
