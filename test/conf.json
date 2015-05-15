@@ -1,6 +1,6 @@
 {
   "db": "mongodb://localhost/test",
-  "useMockgoose": true,
+  "useMockgoose": false,
   "preDrop": true,
   "postDrop": false
 }

@@ -64,22 +64,6 @@ describe('conf-builder', function() {
     });
   });
 
-  describe('auths', function() {
-    it('should set defaults', function(done) {
-      var result = builder.build({});
-      result.should.have.property('auths');
-      result.auths.should.be.a.Array;
-      result.auths.should.have.length(1);
-      result.auths[0].should.be.a.String;
-      done();
-    });
-    it("should bitch if an array isn't given", function(done) {
-      var bad = { auths: "I'm bad, I'm nationwide" };
-      builder.build.bind(null, bad).should.throw();
-      done();
-    });
-  });
-
   describe('serveIndex', function() {
     it('should set defaults', function(done) {
       var result = builder.build({});

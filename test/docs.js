@@ -23,7 +23,7 @@ function loadTestData(done) {
     },
     function(cb) {
       Doc.create(testData[2], cb);
-    },
+    }
   ], done);
 }
 
@@ -44,8 +44,6 @@ beforeEach(loadTestData);
 afterEach(function(done) {
   Doc.remove({}, done);
 });
-
-//after(dbtool.close);
 
 describe('docs', function() {
   describe('route /', function() {

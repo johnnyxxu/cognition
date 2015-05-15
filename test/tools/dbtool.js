@@ -9,10 +9,17 @@ var confAt = require('path').join(__dirname, '..', 'conf.json'),
 
 conf.db = conf.db || 'mongodb://localhost/test';
 
-if (conf.useMockgoose)
+function log(msg) {
+  console.log('dbtool: ' + msg);
+}
+
+if (conf.useMockgoose) {
+  log('using mockgoose');
   require('mockgoose')(mongoose);
+}
 
 function drop() {
+  log('dropping ' + conf.db);
   mongoose.connection.db.dropDatabase();
 }
 
@@ -29,7 +36,12 @@ function verifyEmpty(done) {
 
 module.exports = {
   open: function(done) {
+    if (mongoose.connection.readyState !== 0) {
+      log('not opening because state is ' + mongoose.connection.readyState);
+      return done();
+    }
     mongoose.connect(conf.db, function(err) {
+      log('connecting to ' + conf.db);
       if (err)
         return done(err);
       if (conf.preDrop)
@@ -44,6 +56,7 @@ module.exports = {
   close: function(done) {
     if (conf.postDrop)
       drop();
+    log('closing connection');
     mongoose.connection.close(done);
   },
 

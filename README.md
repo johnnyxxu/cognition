@@ -37,13 +37,13 @@ To use HTTPS, you'll need a key and certificate. This project includes a
 since the key is public on github! I have some separate instructions on how to
 generate your own key and cert in [this][ssl/tls] doc.
 
-To use basic authentication, you'll need to hash a username and password.
-There's a `tools/mkauth.js` script included in this project for that purpose:
+To use basic authentication, you'll need to create a user.
+There's a `tools/mkauth.js` script included in this project for that:
 
-    tools/mkauth.js user:pass
+    tools/mkauth.js user:pass mongodb://host/db
 
-This will output the hashed value for the given credentials. Add the hash
-to the `auths` array in `conf.json` to allow 'user' to login with 'pass'.
+This will add `user` to the `db` database with a hashed `pass`.
+This user should now be able to log in to any routes requiring basic auth.
 
 Note that for security, you should NOT run the server as root.
 However, without root, you won't be able to listen on ports 80 and 443.

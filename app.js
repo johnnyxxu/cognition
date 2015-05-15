@@ -12,7 +12,6 @@ module.exports = function(conf) {
       app = express();
 
   app.set('conf', conf);
-  app.conf = app.get('conf'); // shortcut to access conf
 
   mongoose.connect(conf.db, function(err) {
 

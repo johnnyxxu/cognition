@@ -1,6 +1,6 @@
 // Returns an object with middleware functions
 //   * https() - redirect your route to https
-//   * auth()  - authenticate your route using basic auths defined in conf
+//   * auth()  - authenticate requests to this route using basic auth
 
 // Usage:
 //   var secure = require('.../secure');
@@ -11,22 +11,15 @@
 //   app.use('/secretplace', secure.https, secure.auth);
 
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt'),
+    auth = require('basic-auth'),
+    User = require('../models/user');
 
-function forbid(conf, res) {
-  var realm = conf.authRealm;
+function forbid(res) {
+  var realm = res.app.get('conf').authRealm;
   res.status(401).setHeader('WWW-Authenticate', 'Basic realm="'+realm+'"');
 }
 
-function checkCreds(conf, incoming) {
-  var ok = false;
-  conf.auths.forEach(function(auth){
-    if (bcrypt.compareSync(incoming, auth)){
-      ok = true;
-    }
-  });
-  return ok;
-}
 
 exports.https = function(req, res, next) {
   if (!req.secure)
@@ -36,18 +29,31 @@ exports.https = function(req, res, next) {
 }
 
 exports.auth = function(req, res, next) {
-  var auth = req.headers.authorization;
-  if (!auth) {
-    forbid(req.app.conf, res);
-    return next(new Error());
-  } else {
-    var encoded = auth.split(' ')[1];
-    if (!checkCreds(req.app.conf, encoded)){
-      var decoded = new Buffer(encoded, 'base64').toString();
-      console.log('Received bad creds: ' + decoded);
-      forbid(req.app.conf, res);
-      return next(new Error());
-    }
+  var creds = auth(req);
+
+  if (!creds) {
+    forbid(res);
+    return next(new Error('invalid username:password'));
   }
-  next();
+
+  User.findOne({username:creds.name}, function(err, user) {
+    if (err) {
+      forbid(res);
+      return next(err);
+    } else if (!user) {
+      forbid(res);
+      return next(new Error("username '" + user + "' not found"));
+    }
+
+    bcrypt.compare(creds.pass, user.password, function(err, match) {
+      if (err) {
+        forbid(res);
+        return next(err);
+      } else if (!match) {
+        forbid(res);
+        return next(new Error("bad password '" + creds.pass + "'"));
+      }
+      next();
+    });
+  });
 }

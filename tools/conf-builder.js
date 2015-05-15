@@ -12,9 +12,6 @@ var defaults = {
   'paths.tlsKey': path.join(root, 'tls', 'dev.key.pem'),
   'paths.tlsCert': path.join(root, 'tls', 'dev.cert.pem'),
 
-  // hashed value for test:test
-  'auths.0': '$2a$08$eDv11C3I7e9Pk2HJpbP5O.x7hlxxvs8pSKThH4BfBJLlJT2mA3Cgq',
-
   authRealm: 'Secret Stuff',
 
   db: 'mongodb://localhost/test',
