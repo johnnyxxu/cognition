@@ -13,17 +13,24 @@ router.use(validator.allowContent('application/json'));
 router.use(validator.allowAccept('application/json'));
 router.use(bodyParser.json());
 
-// Strips _id and __v from db object so it can be sent as json response.
-// Use this in /:name routes instead of using '-_id -__v' for Doc.find so
-// the db object can be updated in POST or DELETE.
-function clean(doc) {
-  return {name: doc.name, content: doc.content};
+// Carves properties like _id and __v from db object since the user doesn't
+// need to see these. It's better to use this rather than doing something
+// like Doc.find({...}, '-_id -__v', ...) because the model needs to have
+// those properties when doing an update.
+function toResponse(doc) {
+  return {
+    name: doc.name,
+    content: doc.content
+  };
 }
 
 router.route('/')
   // GET
   .get(function(req, res, next) {
-    Doc.find({}, '-_id -__v', function(err, docs) {
+    var criteria = (req.user) ? { user: req.user.id } : { user: null };
+    // Use '-_id -__v...' instead of toResponse here since we need to select
+    // multiple and we're not doing any updating anyway.
+    Doc.find(criteria, '-_id -__v -user', function(err, docs) {
       if (err)
         return next(err);
       res.payload = docs;
@@ -34,19 +41,24 @@ router.route('/')
   .post(function(req, res, next) {
     Doc.create({
       name: req.body.name,
-      content: req.body.content
+      content: req.body.content,
+      user: (req.user) ? req.user.id : null
     }, function(err, doc) {
       if (err)
         return next(err);
-      res.status(201).payload = clean(doc);
+      res.status(201).payload = toResponse(doc);
       next();
     });
   });
 
-// Validate the name param and provide the doc to the route.
+// Validate the name route param and provide the doc to the route.
 // Don't omit properties like _id because we may need to update the doc.
 router.param('name', function(req, res, next, name) {
-  Doc.findOne({ name: name }, function(err, doc) {
+  var criteria = {
+    name: name,
+    user: (req.user) ? req.user.id : null
+  }
+  Doc.findOne(criteria, function(err, doc) {
     if (err)
       return next(err);
     if (!doc) {
@@ -61,7 +73,7 @@ router.param('name', function(req, res, next, name) {
 router.route('/:name')
   // GET
   .get(function(req, res, next) {
-    res.payload = clean(req.doc);
+    res.payload = toResponse(req.doc);
     next();
   })
   // PUT
@@ -73,7 +85,7 @@ router.route('/:name')
         return next(err);
       if (nUpdated != 1)
         return next(new Error('Document not updated.'));
-      res.payload = clean(doc);
+      res.payload = toResponse(doc);
       next();
     });
   })
@@ -82,7 +94,7 @@ router.route('/:name')
     Doc.remove(req.doc, function(err) {
       if (err)
         return next(err);
-      res.payload = clean(req.doc);
+      res.payload = toResponse(req.doc);
       next();
     });
   });

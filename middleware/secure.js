@@ -1,6 +1,8 @@
 // Returns an object with middleware functions
 //   * https() - redirect your route to https
-//   * auth()  - authenticate requests to this route using basic auth
+//   * auth()  - authenticate requests to this route using basic auth;
+//               this also adds a user object to the request; e.g.
+//               req.user = { id: 0123, name: 'tb' }
 
 // Usage:
 //   var secure = require('.../secure');
@@ -52,6 +54,11 @@ exports.auth = function(req, res, next) {
       } else if (!match) {
         forbid(res);
         return next(new Error("bad password '" + creds.pass + "'"));
+      }
+
+      req.user = {
+        id: user._id,
+        name: user.username
       }
       next();
     });

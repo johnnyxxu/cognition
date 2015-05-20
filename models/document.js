@@ -11,7 +11,8 @@ var docSchema = mongoose.Schema({
       "'{PATH}' must contain only letters, numbers, dashes, and underscores"
     ]
   },
-  content: String
+  content: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 // Use mongoose-unique-validator so we don't get E11000 mongo error.

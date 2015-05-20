@@ -12,26 +12,34 @@ var OK_RES = 'success',
     FAIL_RES = 'fail';
 
 var testData = [
-  { username: 'tyler', password: "don't_guess_me" },
-  { username: 'arnold', password: 'chappa!' }
+{ username: 'tyler', password: "don't_guess_me" },
+{ username: 'arnold', password: 'chappa!' }
 ];
 
 function loadTestData(done) {
   async.parallel([
-    function(cb) {
-      bcrypt.hash(testData[0].password, 4, function(err, hash) {
-        if (err) return cb(err);
-        User.create({ username:testData[0].username, password: hash }, cb);
-      });
-    },
-    function(cb) {
-      bcrypt.hash(testData[1].password, 4, function(err, hash) {
-        if (err) return cb(err);
-        User.create({ username:testData[1].username, password: hash }, cb);
-      });
-    }
+      function(cb) {
+        bcrypt.hash(testData[0].password, 4, function(err, hash) {
+          if (err) return cb(err);
+          User.create({ username:testData[0].username, password: hash }, cb);
+        });
+      },
+      function(cb) {
+        bcrypt.hash(testData[1].password, 4, function(err, hash) {
+          if (err) return cb(err);
+          User.create({ username:testData[1].username, password: hash }, cb);
+        });
+      }
   ], done);
 }
+
+function okMiddleware(req, res, next) {
+  res.send(OK_RES);
+};
+function failMiddleware(err, req, res, next) {
+  res.send(FAIL_RES);
+};
+
 
 before(function(done) {
   dbtool.open(function(err) {
@@ -41,14 +49,6 @@ before(function(done) {
     app = express();
     app.set('conf', {authRealm: 'realm'});
     app.use(secure.auth);  // just test auth for now
-    // for handling success
-    app.use(function(req, res, next) {
-      res.send(OK_RES);
-    });
-    // for handling failures
-    app.use(function(err, req, res, next) {
-      res.send(FAIL_RES);
-    });
     done();
   });
 });
@@ -64,6 +64,12 @@ describe('secure middleware', function() {
     it('should authenticate a valid user (GET)', function(done) {
       loadTestData(function(err) {
         if (err) return done(err);
+        app.use(function(req, res, next) {
+          req.user.should.have.property('id');
+          req.user.should.have.property('name', testData[0].username);
+          next();
+        });
+        app.use(okMiddleware, failMiddleware);
         request(app)
           .get('/')
           .auth(testData[0].username, testData[0].password)
@@ -73,6 +79,11 @@ describe('secure middleware', function() {
     });
 
     it('should reject an invalid user (POST)', function(done) {
+      app.use(function(req, res, next) {
+        req.should.not.have.property('user');
+        next();
+      });
+      app.use(okMiddleware, failMiddleware);
       request(app)
         .post('/')
         .auth('somebody', 'whatever')
@@ -83,6 +94,11 @@ describe('secure middleware', function() {
     it('should reject if password is bad (PUT)', function(done) {
       loadTestData(function(err) {
         if (err) return done(err);
+        app.use(function(req, res, next) {
+          req.should.not.have.property('user');
+          next();
+        });
+        app.use(okMiddleware, failMiddleware);
         request(app)
           .put('/')
           .auth(testData[0].username, 'not correct')
@@ -93,7 +109,12 @@ describe('secure middleware', function() {
 
     it('should reject if no authorization is given (DELETE)', function(done) {
       loadTestData(function(err) {
+        app.use(function(req, res, next) {
+          req.should.not.have.property('user');
+          next();
+        });
         if (err) return done(err);
+        app.use(okMiddleware, failMiddleware);
         request(app)
           .del('/')
           .expect(401, FAIL_RES)
