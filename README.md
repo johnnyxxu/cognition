@@ -8,7 +8,7 @@ my personal stuff "in the cloud" on someone else's server. I would rather host
 it myself - which means I can build it how it should be (simple) and also
 learn something as I go.
 
-Currently, there's just a /docs RESTful API for keeping generic documents.
+Currently, there's just a simple /api/docs API for keeping generic documents.
 
 Start
 -----
@@ -74,8 +74,6 @@ The server reads these properties from `conf.json`:
 - `paths` (non-absolute paths will be relative to the project root)
   - `tlsKey`: path to the key used for https; defaults to `tls/dev.key.pem`
   - `tlsCert`: path to the cert used for https; defaults to `tls/dev.cert.pem`
-- `auths`: array of hashed user:password entries allowed for basic auth;
-  defaults to an array with a single hash for `test:test`
 - `authRealm`: the Basic realm used for https; defaults to `Secret Stuff`
 - `db`: the mongodb URI; defaults to `mongodb://localhost/test`
 - `serveIndex`: array of static directories to serve; each entry in the array
@@ -104,7 +102,7 @@ Before running unit tests, edit `test/conf.json` to configure the tests:
 - `db`: The test database to use.
   If unset, defaults to `mongodb://localhost/test`.
 - `useMockgoose`: if set, the tests will use
-  [mockgoose][mockgoose] instead of a real db.
+  [mockgoose][mockgoose] instead of a real db (this currently isn't working).
 - `preDrop`: if set, the database will be dropped upon connecting.
 - `postDrop`: if set, the database will be dropped before disconnecting.
 

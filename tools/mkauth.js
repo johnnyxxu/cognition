@@ -52,7 +52,7 @@ mongoose.connect(dbName, function(err) {
       if (err)
         return fail(err);
       User.create({
-        username: user,
+        name: user,
         password: hash
       }, function(err, user) {
         if (err)

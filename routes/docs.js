@@ -1,66 +1,59 @@
-// Router for docs API.
+// Router for docs API
 
 var router = require('express').Router(),
     Doc = require('../models/document'),
-    validator = require('../middleware/req-validator'),
+    allowMethods = require('../middleware/req-validator').allowMethods,
     bodyParser = require('body-parser'),
-    errHandler = require('../middleware/err-handler'),
-    resHandler = require('../middleware/res-handler');
+    errHandler = require('../middleware/err-handler');
 
-router.use(/^\/$/, validator.allowMethods('GET', 'POST'));            // /
-router.use(/^\/.+$/, validator.allowMethods('GET', 'PUT', 'DELETE')); // /:name
-router.use(validator.allowContent('application/json'));
-router.use(validator.allowAccept('application/json'));
-router.use(bodyParser.json());
+router.use(/^\/$/,   allowMethods(['GET', 'POST']));          // /
+router.use(/^\/.+$/, allowMethods(['GET', 'PUT', 'DELETE'])); // /:name
+router.use(bodyParser.json({type:'*/*'}));
 
-// Carves properties like _id and __v from db object since the user doesn't
-// need to see these. It's better to use this rather than doing something
-// like Doc.find({...}, '-_id -__v', ...) because the model needs to have
-// those properties when doing an update.
+// Returns an object with just a subset of properties from the mongoose db
+// object. This is the object the client should see - properties like _id and
+// __v should not exist in the response.
+// It's usually better to use this rather than omitting those properties from
+// the lookup like Doc.find({...}, '-_id -__v', ...) on an update such as POST
+// since those properties need to exist when doing doc.save(...).
 function toResponse(doc) {
   return {
     name: doc.name,
-    content: doc.content
+    body: doc.body
   };
 }
 
 router.route('/')
   // GET
   .get(function(req, res, next) {
-    var criteria = (req.user) ? { user: req.user.id } : { user: null };
+    var criteria = (req.user) ? { user: req.user._id } : { user: null };
     // Use '-_id -__v...' instead of toResponse here since we need to select
     // multiple and we're not doing any updating anyway.
     Doc.find(criteria, '-_id -__v -user', function(err, docs) {
-      if (err)
-        return next(err);
-      res.payload = docs;
-      next();
+      if (err) return next(err);
+      res.json(docs);
     });
   })
   // POST
   .post(function(req, res, next) {
     Doc.create({
       name: req.body.name,
-      content: req.body.content,
-      user: (req.user) ? req.user.id : null
+      body: req.body.body,
+      user: (req.user) ? req.user._id : null
     }, function(err, doc) {
-      if (err)
-        return next(err);
-      res.status(201).payload = toResponse(doc);
-      next();
+      if (err) return next(err);
+      res.status(201).json(toResponse(doc));
     });
   });
 
-// Validate the name route param and provide the doc to the route.
-// Don't omit properties like _id because we may need to update the doc.
+// Validate the :name route param and provide the doc to the route.
 router.param('name', function(req, res, next, name) {
   var criteria = {
     name: name,
-    user: (req.user) ? req.user.id : null
+    user: (req.user) ? req.user._id : null
   }
   Doc.findOne(criteria, function(err, doc) {
-    if (err)
-      return next(err);
+    if (err) return next(err);
     if (!doc) {
       res.status(404);
       return next(new Error("Document '" + name + "' not found."));
@@ -73,32 +66,36 @@ router.param('name', function(req, res, next, name) {
 router.route('/:name')
   // GET
   .get(function(req, res, next) {
-    res.payload = toResponse(req.doc);
-    next();
+    res.json(toResponse(req.doc));
   })
   // PUT
   .put(function(req, res, next) {
     req.doc.name = req.body.name;
-    req.doc.content = req.body.content;
+    req.doc.body = req.body.body;
     req.doc.save(function(err, doc, nUpdated) {
-      if (err)
-        return next(err);
-      if (nUpdated != 1)
-        return next(new Error('Document not updated.'));
-      res.payload = toResponse(doc);
-      next();
+      if (err) return next(err);
+      // if nothing was changed, nUpdated will be 0; for now we don't care
+      res.json(toResponse(doc));
     });
   })
   // DELETE
   .delete(function(req, res, next) {
     Doc.remove(req.doc, function(err) {
-      if (err)
-        return next(err);
-      res.payload = toResponse(req.doc);
-      next();
+      if (err) return next(err);
+      res.json(toResponse(req.doc));
     });
   });
 
-router.use(errHandler, resHandler);
+// Error handling middleware.
+router.use(function(err, req, res, next) {
+  // We need this here so we can be specific about the name field in the error
+  // response. AFAIK, we can't put this in the model because we have a compound
+  // uniqueness among name and user.
+  if (err.name === 'MongoError' && err.code === 11000) {
+    err.message = "Name must be unique.";
+    err.field = 'name';
+  }
+  next(err);
+}, errHandler);
 
 module.exports = router;

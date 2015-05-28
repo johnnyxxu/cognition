@@ -12,8 +12,8 @@ var OK_RES = 'success',
     FAIL_RES = 'fail';
 
 var testData = [
-{ username: 'tyler', password: "don't_guess_me" },
-{ username: 'arnold', password: 'chappa!' }
+{ name: 'tyler', password: "don't_guess_me" },
+{ name: 'arnold', password: 'chappa!' }
 ];
 
 function loadTestData(done) {
@@ -21,13 +21,13 @@ function loadTestData(done) {
       function(cb) {
         bcrypt.hash(testData[0].password, 4, function(err, hash) {
           if (err) return cb(err);
-          User.create({ username:testData[0].username, password: hash }, cb);
+          User.create({ name:testData[0].name, password: hash }, cb);
         });
       },
       function(cb) {
         bcrypt.hash(testData[1].password, 4, function(err, hash) {
           if (err) return cb(err);
-          User.create({ username:testData[1].username, password: hash }, cb);
+          User.create({ name:testData[1].name, password: hash }, cb);
         });
       }
   ], done);
@@ -53,7 +53,7 @@ before(function(done) {
   });
 });
 
-afterEach(function(done) {
+beforeEach(function(done) {
   User.remove({}, done);
 });
 
@@ -65,14 +65,14 @@ describe('secure middleware', function() {
       loadTestData(function(err) {
         if (err) return done(err);
         app.use(function(req, res, next) {
-          req.user.should.have.property('id');
-          req.user.should.have.property('name', testData[0].username);
+          req.user.should.have.property('_id');
+          req.user.should.have.property('name', testData[0].name);
           next();
         });
         app.use(okMiddleware, failMiddleware);
         request(app)
           .get('/')
-          .auth(testData[0].username, testData[0].password)
+          .auth(testData[0].name, testData[0].password)
           .expect(200, OK_RES)
           .end(done);
       });
@@ -101,7 +101,7 @@ describe('secure middleware', function() {
         app.use(okMiddleware, failMiddleware);
         request(app)
           .put('/')
-          .auth(testData[0].username, 'not correct')
+          .auth(testData[0].name, 'not correct')
           .expect(401, FAIL_RES)
           .end(done);
       });

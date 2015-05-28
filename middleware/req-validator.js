@@ -9,15 +9,12 @@ var statuses = require('http').STATUS_CODES;
 
 // Returns middleware that validates the method used by a request.
 // When an invalid method is used in the request, next(Error) will be called.
-// Arguments can be an array or list of methods; e.g.
-// allowMethods(['GET', 'POST', ...]) or allowMethods('GET', 'POST', ...)
+// Arguments should be an array of methods; e.g. allowMethods(['GET', 'POST'])
 exports.allowMethods = function(methods) {
-  if (!Array.isArray(methods))
-    methods = [].slice.call(arguments); // convert to array
   return function(req, res, next) {
-    if (methods.indexOf(req.method) == -1) {
+    if (methods.indexOf(req.method) === -1) {
       res.status(405); // method not allowed
-      return next(new Error('This route allows methods ' + methods));
+      return next(new Error('This route allows methods ' + methods + '.'));
     }
     next();
   }
@@ -34,25 +31,22 @@ exports.allowAccept = function() {
   return function(req, res, next) {
     if (!req.accepts.apply(req, types)) {
       res.status(406); // not acceptable
-      var msg = 'You should accept ' + [].slice.call(types);
+      var msg = 'You should accept ' + [].slice.call(types) + '.';
       return next(new Error(msg));
     }
     next();
   }
 }
 
-// Returns middleware that validates the Content-Type used by a request.
-// When an type is used by the request, next(Error) will be called.
+// Returns middleware that validates the Content-Type header used by a request.
+// When an invalid type is used by the request, next(Error) will be called.
 // Validation will pass if there is no request body or no Content-Type header.
-// Arguments can be an array or list of types; e.g.
-// allowContent(['application/json', 'text/html', ...])
-// or allowContent('text/plain, ...)
+// Arguments should be an array of types; e.g.
+// allowContent(['application/json', 'text/html'])
 // You should pass 'application/json' rather than just 'json', for example,
 // because these will be used to construct the error message sent to the
 // client and we should be specific.
 exports.allowContent = function(types) {
-  if (!Array.isArray(types))
-    types = [].slice.call(arguments); // convert to array
   return function(req, res, next) {
     var conType = req.get('Content-Type'), is;
     if (!conType)  // no Content-Type header given in request
@@ -64,7 +58,8 @@ exports.allowContent = function(types) {
         return next();
     }
     res.status(415); // unsupported media type
-    var msg = 'Received Content-Type '+conType+' but I can only read '+types;
+    var msg = 'Received Content-Type ' + conType
+      + ' but I can only read ' + types + '.';
     next(new Error(msg));
   }
 }

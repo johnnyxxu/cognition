@@ -8,10 +8,11 @@ module.exports = function(conf) {
       mkdirp = require('mkdirp'),
       secure = require('./middleware/secure'),
       errHandler = require('./middleware/err-handler'),
-      resHandler = require('./middleware/res-handler'),
+      apiRouter = express.Router(),
       app = express();
 
   app.set('conf', conf);
+  app.set('x-powered-by', false); // don't send "X-Powered-By: Express" header
 
   mongoose.connect(conf.db, function(err) {
 
@@ -34,9 +35,16 @@ module.exports = function(conf) {
       app.use(s.route, serveIndex(s.path, s.options));
     }
 
-    app.use('/docs', secure.https, secure.auth, require('./routes/docs'));
+    // mount /api
+    app.use('/api', apiRouter);
+    apiRouter.use(secure.https, secure.auth);
+    apiRouter.route('/').all(function(req, res, next) {
+      res.status(404);
+      return next(new Error("Nothing here."));
+    });
+    apiRouter.use('/docs', require('./routes/docs'));
+    apiRouter.use(errHandler);
 
-    app.use(errHandler, resHandler);
   });
 
   return app;

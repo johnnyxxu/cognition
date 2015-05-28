@@ -1,16 +1,17 @@
 body {
   font-family: Verdana, Geneva, sans-serif;
-  font-size: 14px;
-  text-align: left;
-  max-width: 400px;
-  padding-left: 15px;
+  font-size: 16px;
+  margin: auto;
+  max-width: 700px;
+  line-height: 1.5;
 }
+h1,h2,h3 {
+  line-height: 1.0;
+}
+code, pre {
+  background-color: #eeeeee;
+}
+
 p, pre {
-  padding-left: 20px;
-}
-.call {
-  font-weight: 700;
-}
-.desc {
-  padding-left: 25px;
+  margin-left: 25px;
 }

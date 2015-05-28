@@ -8,7 +8,7 @@
     "tlsCert": "tls/dev.cert.pem"
   },
   "authRealm": "Secret Stuff",
-  "db": "mongodb://localhost/test",
+  "db": "mongodb://localhost/production",
   "serveIndex": [
     {
       "route": "/public",

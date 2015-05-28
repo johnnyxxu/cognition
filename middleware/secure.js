@@ -2,7 +2,7 @@
 //   * https() - redirect your route to https
 //   * auth()  - authenticate requests to this route using basic auth;
 //               this also adds a user object to the request; e.g.
-//               req.user = { id: 0123, name: 'tb' }
+//               req.user = { _id: 0123, name: 'tb' }
 
 // Usage:
 //   var secure = require('.../secure');
@@ -14,7 +14,7 @@
 
 
 var bcrypt = require('bcrypt'),
-    auth = require('basic-auth'),
+    basicAuth = require('basic-auth'),
     User = require('../models/user');
 
 function forbid(res) {
@@ -31,20 +31,20 @@ exports.https = function(req, res, next) {
 }
 
 exports.auth = function(req, res, next) {
-  var creds = auth(req);
+  var creds = basicAuth(req);
 
   if (!creds) {
     forbid(res);
-    return next(new Error('invalid username:password'));
+    return next(new Error('Invalid username:password.'));
   }
 
-  User.findOne({username:creds.name}, function(err, user) {
+  User.findOne({name:creds.name}, function(err, user) {
     if (err) {
       forbid(res);
       return next(err);
     } else if (!user) {
       forbid(res);
-      return next(new Error("username '" + user + "' not found"));
+      return next(new Error("Username '" + creds.name + "' not found."));
     }
 
     bcrypt.compare(creds.pass, user.password, function(err, match) {
@@ -53,13 +53,10 @@ exports.auth = function(req, res, next) {
         return next(err);
       } else if (!match) {
         forbid(res);
-        return next(new Error("bad password '" + creds.pass + "'"));
+        return next(new Error("Bad password."));
       }
 
-      req.user = {
-        id: user._id,
-        name: user.username
-      }
+      req.user = { _id: user._id, name: user.name };
       next();
     });
   });

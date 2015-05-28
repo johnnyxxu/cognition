@@ -1,23 +1,20 @@
-var mongoose = require('mongoose'),
-    uniqueValidator = require('mongoose-unique-validator');
+var mongoose = require('mongoose');
 
 var docSchema = mongoose.Schema({
   name: {
     type: String,
-    required: "'{PATH}' is required",
-    unique: true,
+    required: "Name is required.",
     match: [
       /^[a-zA-Z0-9\-_]+$/,
-      "'{PATH}' must contain only letters, numbers, dashes, and underscores"
+      "Name can contain only letters, numbers, dashes, and underscores."
     ]
   },
-  content: String,
+  body: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
-// Use mongoose-unique-validator so we don't get E11000 mongo error.
-// Also, we can specify error message with this module.
-docSchema.plugin(uniqueValidator, {message:"'{PATH}' must be unique"});
+// the pair name+user must be unique
+docSchema.index({ name: 1, user: 1 }, { unique: true });
 
 var Doc = mongoose.model('Document', docSchema);
 

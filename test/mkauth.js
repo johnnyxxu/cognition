@@ -18,7 +18,7 @@ before(function(done) {
   });
 });
 
-afterEach(function(done) {
+beforeEach(function(done) {
   User.remove({}, done);
 });
 
@@ -30,15 +30,15 @@ describe('mkauth', function() {
 
   it('should store user:pass in the db with hashed password', function(done) {
     this.timeout(0); // disable timeout because bcrypt will need time
-    var username = 'tyler',
+    var name = 'tyler',
         password = "super_secret_password";
-    call([username+':'+password, db], function(err, stdout, stderr) {
+    call([name+':'+password, db], function(err, stdout, stderr) {
       if (err) return done(err);
-      User.find(username, function(err, users) {
+      User.find({}, function(err, users) {
         if (err) return done(err);
         users.should.have.length(1);
         var user = users[0];
-        user.should.have.property('username', username);
+        user.should.have.property('name', name);
         user.should.have.property('password');
         bcrypt.compare(password, user.password, function(err, match) {
           if (err) return done(err);
@@ -70,7 +70,7 @@ describe('mkauth', function() {
         User.find({}, function(err, users) {
           if (err) return done(err);
           users.should.have.length(1);
-          users[0].should.have.property('username', 'rono');
+          users[0].should.have.property('name', 'rono');
           done();
         });
       });
