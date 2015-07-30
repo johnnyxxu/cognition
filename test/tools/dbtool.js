@@ -7,11 +7,6 @@ function log(msg) {
   console.log('dbtool: ' + msg);
 }
 
-if (conf.useMockgoose) {
-  log('using mockgoose');
-  require('mockgoose')(mongoose);
-}
-
 function drop() {
   log('dropping ' + conf.db);
   mongoose.connection.db.dropDatabase();
@@ -40,10 +35,7 @@ module.exports = {
         return done(err);
       if (conf.preDrop)
         drop();
-      if (!conf.useMockgoose)
-        verifyEmpty(done);
-      else
-        done();
+      verifyEmpty(done);
     });
   },
 
