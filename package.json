@@ -12,19 +12,27 @@
     "basic-auth": "^1.0.3",
     "bcrypt": "^0.8.4",
     "body-parser": "^1.13.2",
+    "bootstrap": "^3.3.5",
+    "bootswatch": "^3.3.5",
     "express": "^4.13.1",
+    "jquery": "^2.1.4",
     "mkdirp": "^0.5.1",
     "mongoose": "^4.1.0",
     "serve-favicon": "^2.3.0",
     "serve-index": "^1.7.1"
   },
   "devDependencies": {
+    "grunt-cli": "^0.1.13",
+    "gulp": "^3.9.0",
+    "gulp-insert": "^0.4.0",
+    "gulp-shell": "^0.4.2",
     "mocha": "^2.2.5",
     "should": "^7.0.2",
     "supertest": "^1.0.1"
   },
   "scripts": {
     "test": "mocha --bail test/",
-    "start": "node server.js"
+    "start": "node server.js",
+    "gulp": "gulp"
   }
 }
