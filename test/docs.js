@@ -86,7 +86,7 @@ describe('docs', function() {
           .end(function(err, res) {
             if (err) return done(err);
             // can't guarantee order
-            res.body.should.be.an.Array.and.have.length(expected.length);
+            res.body.should.be.an.instanceOf(Array).and.have.length(expected.length);
             for (var i in data.unowned)
               res.body.should.containEql(expected[i]);
             done();
@@ -110,7 +110,7 @@ describe('docs', function() {
           .end(function(err, res) {
             if (err) return done(err);
             // can't guarantee order
-            res.body.should.be.an.Array.and.have.length(expected.length);
+            res.body.should.be.an.instanceOf(Array).and.have.length(expected.length);
             for (var i in expected)
               res.body.should.containEql(expected[i]);
             done();
@@ -202,7 +202,7 @@ describe('docs', function() {
           .send(dupe).expect(409).expect('Content-Type', /json/) // 409 conflict
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.have.property('field', 'name');
             Doc.find({user:null}, function(err, docs) {
@@ -223,7 +223,7 @@ describe('docs', function() {
           .send(req).expect(400).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.have.property('field', 'name');
             Doc.find({}, function(err, docs) {
@@ -247,7 +247,7 @@ describe('docs', function() {
             .send(req).expect(400).expect('Content-Type', /json/)
             .end(function(err, res) {
               if (err) return cb(err);
-              res.body.should.be.an.Array.and.have.length(1);
+              res.body.should.be.an.instanceOf(Array).and.have.length(1);
               res.body[0].should.have.property('message');
               res.body[0].should.have.property('field', 'name');
               Doc.find({}, function(err, docs) {
@@ -266,7 +266,7 @@ describe('docs', function() {
           .expect(400).expect('Content-Type', /json/) // 400 bad request
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({}, function(err, docs) {
@@ -283,7 +283,7 @@ describe('docs', function() {
           .expect(400).expect('Content-Type', /json/) // 400 bad request
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             Doc.find({}, function(err, docs) {
               if (err) return done(err);
@@ -303,7 +303,7 @@ describe('docs', function() {
           .expect('Content-Type', /json/).expect(405) // 405 method not allowed
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({}, function(err, docs) {
@@ -324,7 +324,7 @@ describe('docs', function() {
           .expect('Content-Type', /json/).expect(405) // 405 method not allowed
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({}, function(err, docs) {
@@ -390,7 +390,7 @@ describe('docs', function() {
           .expect(404).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             done();
@@ -406,7 +406,7 @@ describe('docs', function() {
           .expect(404).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             done();
@@ -427,7 +427,7 @@ describe('docs', function() {
             .expect(405).expect('Content-Type', /json/)// 405 method not allowed
             .end(function(err, res) {
               if (err) return cb(err);
-              res.body.should.be.an.Array.and.have.length(1);
+              res.body.should.be.an.instanceOf(Array).and.have.length(1);
               res.body[0].should.have.property('message');
               res.body[0].should.not.have.property('field');
               Doc.find({}, function(err, docs) {
@@ -519,7 +519,7 @@ describe('docs', function() {
           .expect(404).expect('Content-Type', /json/) // 404 not found
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({name: req.name}, function(err, docs) {
@@ -542,7 +542,7 @@ describe('docs', function() {
           .expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.have.property('field', 'name');
             Doc.find({name: existing.name}, function(err, docs) {
@@ -602,7 +602,7 @@ describe('docs', function() {
           .expect(404).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find(doc, function(err, docs) {
@@ -629,7 +629,7 @@ describe('docs', function() {
             .expect('Content-Type', /json/)
             .end(function(err, res) {
               if (err) return cb(err);
-              res.body.should.be.an.Array.and.have.length(1);
+              res.body.should.be.an.instanceOf(Array).and.have.length(1);
               res.body[0].should.have.property('message');
               res.body[0].should.have.property('field', 'name');
               Doc.find(doc, function(err, docs) {
@@ -652,7 +652,7 @@ describe('docs', function() {
           .expect(400).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find(doc, function(err, docs) {
@@ -670,7 +670,7 @@ describe('docs', function() {
           .expect(400).expect('Content-Type', /json/) // 400 bad request
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             Doc.find(req, function(err, docs) {
               if (err) return done(err);
@@ -717,7 +717,7 @@ describe('docs', function() {
           .expect(404).expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({user:user}, function(err, docs) {
@@ -737,7 +737,7 @@ describe('docs', function() {
           .expect('Content-Type', /json/)
           .end(function(err, res) {
             if (err) return done(err);
-            res.body.should.be.an.Array.and.have.length(1);
+            res.body.should.be.an.instanceOf(Array).and.have.length(1);
             res.body[0].should.have.property('message');
             res.body[0].should.not.have.property('field');
             Doc.find({}, function(err, docs) {
