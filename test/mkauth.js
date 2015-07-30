@@ -4,9 +4,9 @@ var exec = require('child_process').exec,
     dbtool = require('./tools/dbtool'),
     should = require('should'),
     bcrypt = require('bcrypt'),
-    db = require('./conf.json').db,
+    db = require('./tools/conf.js').db,
     path = require('path'),
-    script = path.join(__dirname, '..', 'tools', 'mkauth.js'),
+    script = path.join(__dirname, '..', 'mkauth.js'),
     User;
 
 before(function(done) {

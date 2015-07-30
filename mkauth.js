@@ -19,7 +19,7 @@ var ROUNDS = 8;
 
 var bcrypt = require('bcrypt'),
     mongoose = require('mongoose'),
-    User = require('../models/user'),
+    User = require('./models/user'),
     creds = process.argv[2],
     dbName = process.argv[3];
 

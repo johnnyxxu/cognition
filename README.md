@@ -10,7 +10,7 @@ learn something as I go.
 
 Currently, there's just a simple /api/docs API for keeping generic documents.
 
-Start
+Setup
 -----
 I've only run this myself on Arch linux but the steps should be similar for
 other distros. Install [node][node] and [mongodb][mongo].
@@ -27,10 +27,7 @@ Clone the project and install dependencies:
     npm config set python /usr/bin/python2
     npm install
 
-The **Testing** section below describes how to configure and run the unit tests.
-
-Copy `example.conf.json` to `conf.json` and edit it.
-See the **Configuration** section below for more info.
+Copy `example.conf.js` to `conf.js` and edit it.
 
 To use HTTPS, you'll need a key and certificate. This project includes a
 `dev.key.pem` and `dev.cert.pem` for development. Never use these in production
@@ -38,13 +35,15 @@ since the key is public on github! I have some separate instructions on how to
 generate your own key and cert in [this][ssl/tls] doc.
 
 To use basic authentication, you'll need to create a user.
-There's a `tools/mkauth.js` script included in this project for that:
+There's a `mkauth.js` script included in this project for that:
 
-    tools/mkauth.js user:pass mongodb://host/db
+    mkauth.js user:pass mongodb://host/db
 
 This will add `user` to the `db` database with a hashed `pass`.
 This user should now be able to log in to any routes requiring basic auth.
 
+Run it
+------
 Note that for security, you should NOT run the server as root.
 However, without root, you won't be able to listen on ports 80 and 443.
 For development, you can configure the server to listen for http and https
@@ -57,66 +56,25 @@ To run the server:
 
     node server.js [conf]
 
-The `[conf]` argument is optional; if omitted, it defaults to your `conf.json`.
+The `[conf]` argument is optional; if omitted, it defaults to your `conf.js`.
 Alternatively, you can start the server with `npm`:
 
     npm start
 
 Browse to `http://localhost:8080`.
 
-Configuration
--------------
-The server reads these properties from `conf.json`:
-
-- `ports`
-  - `http`: the http port to listen on; defaults to `8080`
-  - `https`: the https port to listen on; defaults to `8443`
-- `paths` (non-absolute paths will be relative to the project root)
-  - `tlsKey`: path to the key used for https; defaults to `tls/dev.key.pem`
-  - `tlsCert`: path to the cert used for https; defaults to `tls/dev.cert.pem`
-- `authRealm`: the Basic realm used for https; defaults to `Secret Stuff`
-- `db`: the mongodb URI; defaults to `mongodb://localhost/test`
-- `serveIndex`: array of static directories to serve; each entry in the array
-  is an object with these properties:
-  - `route`: the route
-  - `path`: the local path to the directory to serve files from
-  - `secure`: boolean - if true, route will be secured with tls and basic auth
-  - `options`: options object passed to [serve-index][serve-index opts]
-
-By default, the `serveIndex` array contains a single entry:
-
-    {
-      route: '/public',
-      path: 'web/public',
-      secure: false,
-      options: {
-        icons: true,
-        views: 'details'
-      }
-    }
-
 Testing
 -------
-Before running unit tests, edit `test/conf.json` to configure the tests:
-
-- `db`: The test database to use.
-  If unset, defaults to `mongodb://localhost/test`.
-- `useMockgoose`: if set, the tests will use
-  [mockgoose][mockgoose] instead of a real db (this currently isn't working).
-- `preDrop`: if set, the database will be dropped upon connecting.
-- `postDrop`: if set, the database will be dropped before disconnecting.
-
-Run `npm test` to run all unit tests.
+To run unit tests, edit `test/tools/conf.js` and run `npm test` from the
+project root directory.
 
 TODO
 ----
 - HTML UI for the REST docs
 - More content, APIs
 
-[mockgoose]:        https://www.npmjs.org/package/mockgoose
 [node]:             http://nodejs.org/
 [mongo]:            http://www.mongodb.org/
 [iptables-wiki]:    https://wiki.archlinux.org/index.php/iptables
 [iptables-guide]:   https://github.com/tylerbrazier/linux/blob/master/docs/iptables.md
-[serve-index opts]: https://www.npmjs.com/package/serve-index#options
 [ssl/tls]:          https://github.com/tylerbrazier/linux/blob/master/docs/server.md

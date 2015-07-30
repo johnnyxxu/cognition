@@ -1,29 +1,20 @@
 #!/usr/bin/env node
 
-var usage = 'Usage (as unprivilaged user): node server.js [conf.json]';
+var usage = 'Usage (as unprivilaged user): node server.js [conf.js]';
 
 var http = require('http'),
     https = require('https'),
     fs = require('fs'),
     path = require('path'),
-    builder = require('./tools/conf-builder'),
-    confPath, conf;
+    conf = require('./conf.js'),
+    app = require('./app')(conf);
 
-try {
-  confPath = process.argv[2] || path.join(__dirname, 'conf.json');
-  conf = builder.build(require(path.resolve(confPath)));
-} catch (err) {
-  console.error(err);
-  console.error(usage);
-  process.exit(1);
-}
-
+// TODO for now we just resolve relative paths when they're used; consider
+// doing this for all conf.path before passing the conf anywere
 var httpsOptions = {
-  key: fs.readFileSync(conf.paths.tlsKey),
-  cert: fs.readFileSync(conf.paths.tlsCert)
+  key: fs.readFileSync(path.resolve(__dirname, conf.paths.tlsKey)),
+  cert: fs.readFileSync(path.resolve(__dirname, conf.paths.tlsCert))
 };
-
-var app = require('./app')(conf);
 
 http.createServer(app).listen(conf.ports.http);
 https.createServer(httpsOptions, app).listen(conf.ports.https);

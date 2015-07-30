@@ -1,13 +1,7 @@
 // Tool for managing the db connection for unit tests.
-// This uses the conf.json file in the test directory.
-// See the README for what each setting does.
 
-var mongoose = require('mongoose');
-
-var confAt = require('path').join(__dirname, '..', 'conf.json'),
-    conf = require(confAt);
-
-conf.db = conf.db || 'mongodb://localhost/test';
+var mongoose = require('mongoose'),
+    conf = require('./conf.js');
 
 function log(msg) {
   console.log('dbtool: ' + msg);

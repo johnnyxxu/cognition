@@ -2,7 +2,7 @@
 !/tls/dev.key.pem
 !/tls/dev.cert.pem
 /web/public/
-/conf.json
+/conf.js
 
 node_modules
 *.log
