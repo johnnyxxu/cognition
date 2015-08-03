@@ -1,8 +1,9 @@
+/conf.js
+/web/serve/public/
+/web/build/
 /tls/*
 !/tls/dev.key.pem
 !/tls/dev.cert.pem
-/web/public/
-/conf.js
 
 node_modules
 *.log

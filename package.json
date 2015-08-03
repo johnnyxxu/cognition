@@ -24,9 +24,10 @@
   "devDependencies": {
     "grunt-cli": "^0.1.13",
     "gulp": "^3.9.0",
-    "gulp-insert": "^0.4.0",
-    "gulp-shell": "^0.4.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.2",
     "mocha": "^2.2.5",
+    "rimraf": "^2.4.2",
     "should": "^7.0.2",
     "supertest": "^1.0.1"
   },

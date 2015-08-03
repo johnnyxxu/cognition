@@ -16,7 +16,7 @@ module.exports = {
   serveIndex: [
     {
       route: "/public",
-      path: "web/public",
+      path: "web/serve/public",
       // if true, the route will be secured with TLS and basic auth
       secure: false,
       // options object passed to serve-index
